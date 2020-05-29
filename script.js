@@ -1,12 +1,12 @@
-(function () {
+(function() {
     $("#Vocabulary .multiple-text-box").hide();
     $("#SpeakOutLoud .multiple-text-box").hide();
 
-    $(".custom-select.vocabulary").change(function () {
+    $(".custom-select.vocabulary").change(function() {
         updateDisplayedStatus("#Vocabulary", $(this).children("option:selected").val());
     });
 
-    $(".custom-select.speak-out-loud").change(function () {
+    $(".custom-select.speak-out-loud").change(function() {
         updateDisplayedStatus("#SpeakOutLoud", $(this).children("option:selected").val());
     });
 
@@ -24,7 +24,7 @@
     $("#TableBody").append(localStorage.getItem("__tableData"));
 })();
 
-var CommonModule = (function () {
+var CommonModule = (function() {
     const translateApiUrl = "https://translate.yandex.net/api/v1.5/tr.json/translate";
     let data = {};
 
@@ -47,8 +47,8 @@ var CommonModule = (function () {
 
         console.log(request);
         $.get(translateApiUrl, request)
-            .done(function (data) { callback(data); })
-            .fail(function (data) { console.error(data); })
+            .done(function(data) { callback(data); })
+            .fail(function(data) { console.error(data); })
     }
 
     function SetData(key, value) {
@@ -68,7 +68,7 @@ var CommonModule = (function () {
 })();
 
 
-var TableModule = (function (commonModule) {
+var TableModule = (function(commonModule) {
     var orderNumber = 1;
     var vocabIndex = 0;
 
@@ -122,8 +122,9 @@ var TableModule = (function (commonModule) {
             `Đề khởi động bài học ngày hôm nay, anh/chị hãy ${hasVideo ? "xem video và" : ""} trả lời các câu hỏi sau:\n ${hasBr ? "<br>" : ""}`,
         ];
 
-        $("#ListWarmUpQuestion .container-custom").each(function (index) {
-            listContent.push(`${$(this).children(".en").val()} (${$(this).children(".vi").val()}) ${hasBr ? "<br>" : ""}`);
+        $("#ListWarmUpQuestion .container-custom").each(function(index) {
+            if ($(this).children(".en").val())
+                listContent.push(`${$(this).children(".en").val()} (${$(this).children(".vi").val()}) ${hasBr ? "<br>" : ""}`);
         });
 
         return _generateHtml("Warm up", listContent);
@@ -143,8 +144,9 @@ var TableModule = (function (commonModule) {
             `Trong phần này anh chị sẽ được học một số từ và mẫu câu hữu ích sau: ${hasBr ? "<br>" : ""}`,
         ];
 
-        $("#ListDialougeSentence .container-custom").each(function (index) {
-            listContent.push(`${$(this).children(".en").val()} (${$(this).children(".vi").val()}) ${hasBr ? "<br>" : ""}`);
+        $("#ListDialougeSentence .container-custom").each(function(index) {
+            if ($(this).children(".en").val())
+                listContent.push(`${$(this).children(".en").val()} (${$(this).children(".vi").val()}) ${hasBr ? "<br>" : ""}`);
         });
 
         return _generateHtml("Dialouge", listContent);
@@ -161,7 +163,7 @@ var TableModule = (function (commonModule) {
             listWords = listWords.replace(/\n/g, '<br/>');
             listContent.push(listWords);
         } else {
-            $("#Vocabulary .multiple-text-box .container-custom").each(function (index) {
+            $("#Vocabulary .multiple-text-box .container-custom").each(function(index) {
                 listContent.push(`${$(this).children(".en").val()}: ${$(this).children(".vi").val()} ${hasBr ? "<br>" : ""}`);
             });
         }
@@ -177,7 +179,7 @@ var TableModule = (function (commonModule) {
             listContent.push("loading...");
             vocabIndex = orderNumber + 1;
         } else {
-            $("#SpeakOutLoud .multiple-text-box .container-custom").each(function (index) {
+            $("#SpeakOutLoud .multiple-text-box .container-custom").each(function(index) {
                 listContent.push(`${$(this).children(".en").val()}: ${$(this).children(".vi").val()} ${hasBr ? "&lt;br&gt;" : ""}`);
             });
         }
@@ -189,14 +191,15 @@ var TableModule = (function (commonModule) {
             `Ở phần tiếp theo này, anh chị sẽ chọn một bối cảnh và thực hành nói chuyện với giáo viên về bối cảnh đó:`
         ];
 
-        listContent.push(`Chủ đề: ${$("#ConversationTopic .container-custom").children(".en").val()}: ${$("#ConversationTopic .container-custom").children(".vi").val()} ${hasBr ? "<br>" : ""}`);
+        listContent.push(`Chủ đề: ${$("#ConversationTopic .container-custom").children(".en").val()} (${$("#ConversationTopic .container-custom").children(".vi").val()}) ${hasBr ? "<br>" : ""}`);
 
-        $("#ConversationContext .container-custom").each(function (index) {
+        $("#ConversationContext .container-custom").each(function(index) {
             listContent.push(`Bối cảnh ${index + 1}: ${$(this).children(".en").val()} (${$(this).children(".vi").val()}) ${hasBr ? "<br>" : ""}`);
         });
 
-        $("#ConversationSuggestion .container-custom").each(function (index) {
-            listContent.push(`Gợi ý ${index + 1}: ${$(this).children(".en").val()} (${$(this).children(".vi").val()}) ${hasBr ? "<br>" : ""}`);
+        $("#ConversationSuggestion .container-custom").each(function(index) {
+            if ($(this).children(".en").val())
+                listContent.push(`Gợi ý ${index + 1}: ${$(this).children(".en").val()} (${$(this).children(".vi").val()}) ${hasBr ? "<br>" : ""}`);
         });
         return _generateHtml("Conversation", listContent);
     }
@@ -237,12 +240,12 @@ var TableModule = (function (commonModule) {
             if (!listWords[i])
                 continue;
 
-            CommonModule.translate(listWords[i], function (data) {
+            CommonModule.translate(listWords[i], function(data) {
                 output += `${listWords[i]}: ${data.text[0]} &lt;br&gt; <br>`;
             });
         }
 
-        setTimeout(function () {
+        setTimeout(function() {
             $("#content" + vocabIndex).empty();
             $("#content" + vocabIndex).append(output);
         }, 3000);
